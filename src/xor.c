@@ -4,9 +4,9 @@
 #include <time.h> 
 
 // Fonction de chiffrement et déchiffrement XOR
-void xor(const unsigned char *msg, const unsigned char *key, unsigned char *output, size_t msg_len, size_t key_len) {
+void xor(const unsigned char *msg, const unsigned char *key, unsigned char *output, size_t msg_len) {
     for (size_t i = 0; i < msg_len; i++) {
-        output[i] = msg[i] ^ key[i % key_len];  // Opération XOR
+        output[i] = msg[i] ^ key[i];  // Opération XOR
     }
 }
 
@@ -21,28 +21,43 @@ void gen_key(unsigned char *key, size_t key_len) {
     key[key_len] = '\0'; // Terminer la chaîne
 }
 
+// Fonction pour sauvegarder la clé dans un fichier
+void save_key_to_file(const char *filename, const unsigned char *key) {
+    FILE *file = fopen(filename, "a");
+    if (file != NULL) {
+        fprintf(file, "%s\n", key); // Écrire la clé suivie d'un saut de ligne
+        fclose(file);
+    } else {
+        fprintf(stderr, "Erreur lors de l'ouverture du fichier pour sauvegarder la clé.\n");
+    }
+}
+
 int main() {
     // Initialiser le générateur de nombres aléatoires
     srand(time(NULL)); // Utiliser l'heure actuelle comme graine pour donner à chaque fois un nombre aleatoire different
 
-    // Exemple de message et de clé
-    unsigned char msg[] = "Projet avance Equipe 6";
-    unsigned char key[20]; // Clé de longueur maximale de 20
-    gen_key(key, 10); // Générer une clé aléatoire de 10 caractères
-
+    // Exemple de message
+    unsigned char msg[] = "Les carottes sont cuites";
     size_t msg_len = strlen((char *)msg);
-    size_t key_len = strlen((char *)key);
+
+    // Générer une clé aléatoire de la même longueur que le message
+    unsigned char *key = (unsigned char *)malloc(msg_len + 1);
+    gen_key(key, msg_len); // Générer une clé aléatoire de la même longueur que le message
+
+    
+     // Sauvegarder la clé dans un fichier
+    save_key_to_file("keys.txt", key);
     
     // Allocation de mémoire pour le résultat chiffré
     unsigned char *encrypted = (unsigned char *)malloc(msg_len + 1);
     unsigned char *decrypted = (unsigned char *)malloc(msg_len + 1);
 
     // Chiffrement
-    xor(msg, key, encrypted, msg_len, key_len);
+    xor(msg, key, encrypted, msg_len);
     encrypted[msg_len] = '\0'; // Terminer la chaîne
 
     // Déchiffrement
-    xor(encrypted, key, decrypted, msg_len, key_len);
+    xor(encrypted, key, decrypted, msg_len);
     decrypted[msg_len] = '\0'; // Terminer la chaîne
 
     // Affichage des résultats
