@@ -1,0 +1,7 @@
+Début du processus de cryptographie...
+Lecture du fichier 'clair.txt' réussie, taille : 23 octets
+Lecture du fichier 'key.txt' réussie, taille : 256 octets
+Clé lue depuis le fichier 'key.txt'
+Chiffrement XOR effectué.
+Écriture dans le fichier 'key.txt' réussie, taille : 16 octets
+Processus terminé avec succès.
