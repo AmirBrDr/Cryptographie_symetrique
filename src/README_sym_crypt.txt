@@ -6,6 +6,10 @@ Amirmahdi GHASEMI, Ivan URIB, Axel CARCY, Mohamed-Yâ-Sîn MAATI
 ## Introduction
 sym_crypt est un programme de chiffrement et de déchiffrement symétrique qui permet d’appliquer plusieurs méthodes de cryptographie, notamment le XOR, le masque et le mode CBC. Il prend en charge l'utilisation de fichiers pour l'entrée et la sortie, et propose la gestion de fichiers de clé et de vecteur d'initialisation (IV).
 
+## Compilation
+Le programme se compile avec la ligne de commande suivante :
+### gcc sym_crypt.c xor.c cbc.c -o sym_crypt
+
 ## Utilisation
 Le programme s'utilise en ligne de commande avec la syntaxe suivante :
 
