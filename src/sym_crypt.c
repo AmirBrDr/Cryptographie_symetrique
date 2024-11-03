@@ -188,9 +188,10 @@ int main(int argc, char *argv[]) {
         cbc_dechiffrement(message_entree, cle, vecteur_init, message_sortie);
 
         if (log_flux) fprintf(log_flux, "Déchiffrement CBC effectué.\n");
+        
     } else if (strcmp(methode, "mask") == 0) {
         // Générer une clé aléatoire si la méthode est mask
-        cle = malloc(TAILLE_BLOC + 1);
+        cle = malloc(taille_entree + 1);
 
         if (!cle) {
             perror("Erreur d'allocation de mémoire pour la clé générée");
@@ -205,11 +206,9 @@ int main(int argc, char *argv[]) {
         save_key_to_file(fichier_cle, cle);  // Sauvegarder la clé dans key.txt
 
         if (log_flux){
-            fprintf(log_flux, "Écriture dans le fichier '%s' réussie, taille : %zu octets\n", fichier_cle, (unsigned long)TAILLE_BLOC);
-            if (log_flux) fprintf(log_flux, "Processus terminé avec succès.\n");
+            fprintf(log_flux, "Écriture dans le fichier '%s' réussie, taille : %zu octets\n", fichier_cle, (unsigned long)taille_entree);
         } 
 
-        return EXIT_SUCCESS;
 
     } else {
 

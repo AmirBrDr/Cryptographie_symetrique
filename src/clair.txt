@@ -1,1 +1,1 @@
-message entree est ceci
+message entree
