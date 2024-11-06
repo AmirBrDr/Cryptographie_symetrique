@@ -3,7 +3,7 @@
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
-#include "cbc.h" // Assurez-vous d'inclure votre fichier d'en-tête
+#include "cbc.h"  // Assurez-vous d'inclure votre fichier d'en-tête
 #include "xor.h"
 
 // Flux de log (par défaut stderr)
@@ -129,7 +129,9 @@ int main(int argc, char *argv[]) {
 
     if (log_flux) fprintf(log_flux, "Début du processus de cryptographie...\n");
 
-    if (!fichier_entree || !fichier_sortie || (!cle_directe && !fichier_cle) || (!cle_directe && !fichier_cle && strcmp(methode, "mask") != 0) || !methode) {
+    if (!fichier_entree || !fichier_sortie || (!cle_directe && !fichier_cle) || (!cle_directe && !fichier_cle && strcmp(methode, "mask") != 0) 
+        || (!fichier_iv && strcmp(methode, "cbc-crypt") == 0) || (!fichier_iv && strcmp(methode, "cbc-uncrypt") == 0)|| !methode) {
+            
         fprintf(stderr, "Erreur : Arguments obligatoires manquants.\n");
         if (log_flux) fprintf(log_flux, "Erreur : Arguments obligatoires manquants.\n");
         afficher_aide();
@@ -166,13 +168,14 @@ int main(int argc, char *argv[]) {
     } else if (strcmp(methode, "cbc-crypt") == 0) {
 
         lire_fichier(fichier_iv, &vecteur_init, &taille_iv);
+
         if (taille_iv != TAILLE_BLOC) {
             fprintf(stderr, "Erreur : Le vecteur d'initialisation doit faire %d octets.\n", TAILLE_BLOC);
             if (log_flux) fprintf(log_flux, "Erreur : Le vecteur d'initialisation doit faire %d octets.\n", TAILLE_BLOC);
             free(vecteur_init);
             return EXIT_FAILURE;
         }
-        cbc_chiffrement(message_entree, cle, vecteur_init, message_sortie);
+        cbc_chiffrement(message_entree, taille_entree, cle, vecteur_init, message_sortie);
 
         if (log_flux) fprintf(log_flux, "Chiffrement CBC effectué.\n");
 
@@ -185,7 +188,7 @@ int main(int argc, char *argv[]) {
             free(vecteur_init);
             return EXIT_FAILURE;
         }
-        cbc_dechiffrement(message_entree, cle, vecteur_init, message_sortie);
+        cbc_dechiffrement(message_entree, taille_entree, cle, vecteur_init, message_sortie);
 
         if (log_flux) fprintf(log_flux, "Déchiffrement CBC effectué.\n");
         
