@@ -1,5 +1,6 @@
 import threading
 import queue
+import sys
 
 # Fonction de puissance modulaire
 def puissance_mod_n(a: int, e: int, n: int) -> int:
@@ -45,8 +46,36 @@ def bob(param_queue, alice_to_bob_queue, bob_to_alice_queue, output_file):
     with open(output_file, 'a') as f:
         f.write(f"Clé partagée (calculée par Bob) : {shared_key}\n")
 
+def print_usage():
+    print("Usage: script.py -i input_file -o output_file [-h]")
+    print("Options:")
+    print("  -i input_file   Spécifie le fichier d'entrée.")
+    print("  -o output_file  Spécifie le fichier de sortie.")
+    print("  -h              Affiche ce message d'aide.")
+
 # Fonction principale pour gérer les paramètres et lancer les threads
-def main(input_file, output_file):
+def main():
+    input_file = None
+    output_file = None
+
+    # Parcours des arguments de la ligne de commande
+    for i in range(1, len(sys.argv)):
+        if sys.argv[i] == "-i" and (i + 1) < len(sys.argv):
+            input_file = sys.argv[i + 1]
+            i += 1  # Passer l'argument du fichier
+        elif sys.argv[i] == "-o" and (i + 1) < len(sys.argv):
+            output_file = sys.argv[i + 1]
+            i += 1  # Passer l'argument du fichier
+        elif sys.argv[i] == "-h":
+            print_usage()
+            sys.exit(0)
+
+    # Vérification des arguments obligatoires
+    if not input_file or not output_file:
+        print("Erreur : Les arguments -i et -o sont obligatoires.")
+        print_usage()
+        sys.exit(1)
+
     with open(input_file, 'r') as f:
         lines = f.readlines()
         p = int(lines[0].split('=')[1].strip())
@@ -76,5 +105,4 @@ def main(input_file, output_file):
     bob_thread.join()
     print("Échange de clés terminé, clé partagée enregistrée dans le fichier de sortie.")
 
-# Exemple d'utilisation
-main('key.txt', 'out.txt')
+main()
