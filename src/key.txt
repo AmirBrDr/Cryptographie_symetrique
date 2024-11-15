@@ -1,16 +1,2 @@
-es4KdUj7CcnYamIU
-7S11loZdrnVtjYGq
-8vIgvZJSz96kRkEfu41M4m3
-sqIhjijE8Qs526ylK0jHyjn
-yR2VTlIbsacE0ZoUeyNzXJu
-DgoXJ6e0CUCMVp72nlEZVu6
-IFLYySKPNE2VQPQbv8wpUeJ
-N470nEgFXor3MfzjDVoPTYl
-Sst1dqMu78RcHFirMIffRJX
-iueM7xek7qfime
-MUoV6aki7TJ7TJ
-16t0AtSMC7YxEZ
-vvC9z6XKCzsmbv
-AUYaoStzMjRu6V
-FjlceEZoW3hC2l
-JSOiRNgQf7ehOi
+p = 9629
+g = 2

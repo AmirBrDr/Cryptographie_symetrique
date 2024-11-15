@@ -1,55 +1,80 @@
 import threading
 import queue
-import sys
 
 # Fonction de puissance modulaire
 def puissance_mod_n(a: int, e: int, n: int) -> int:
-    result = 1
-    a = a % n
+    p = 1
     while e > 0:
-        if (e % 2) == 1:  # Si e est impair
-            result = (result * a) % n
-        e = e >> 1  # Division par 2
-        a = (a * a) % n  # a^2
-    return result
+        if e % 2 != 0:
+            p = (p * a) % n
+        a = (a * a) % n
+        e //= 2
+    return p
 
-def alice(param_queue):
+# Fonction pour Alice
+def alice(param_queue, alice_to_bob_queue, bob_to_alice_queue, output_file):
     p, g = param_queue.get()
     a = 6  # Choisir un secret pour Alice
-    A = puissance_mod_n(g, a, p)  # Calculer A = g^a [p]
+    A = puissance_mod_n(g, a, p)  # Calculer A = g^a mod p
     print(f"Alice envoie A = {A} à Bob.")
-    return A, a
+    alice_to_bob_queue.put(A)  # Envoi de A à Bob
 
-def bob(param_queue):
+    # Attendre la réception de B
+    B = bob_to_alice_queue.get()
+    shared_key = puissance_mod_n(B, a, p)
+    print(f"Alice calcule la clé partagée = {shared_key}")
+
+    # Enregistrement de la clé partagée dans le fichier de sortie
+    with open(output_file, 'a') as f:
+        f.write(f"Clé partagée (calculée par Alice) : {shared_key}\n")
+
+# Fonction pour Bob
+def bob(param_queue, alice_to_bob_queue, bob_to_alice_queue, output_file):
     p, g = param_queue.get()
     b = 15  # Choisir un secret pour Bob
-    B = puissance_mod_n(g, b, p)  # Calculer B = g^b [p]
+    B = puissance_mod_n(g, b, p)  # Calculer B = g^b mod p
     print(f"Bob envoie B = {B} à Alice.")
-    return B, b
+    bob_to_alice_queue.put(B)  # Envoi de B à Alice
 
-def main(input_file):
+    # Attendre la réception de A
+    A = alice_to_bob_queue.get()
+    shared_key = puissance_mod_n(A, b, p)
+    print(f"Bob calcule la clé partagée = {shared_key}")
+
+    # Enregistrement de la clé partagée dans le fichier de sortie
+    with open(output_file, 'a') as f:
+        f.write(f"Clé partagée (calculée par Bob) : {shared_key}\n")
+
+# Fonction principale pour gérer les paramètres et lancer les threads
+def main(input_file, output_file):
     with open(input_file, 'r') as f:
         lines = f.readlines()
         p = int(lines[0].split('=')[1].strip())
         g = int(lines[1].split('=')[1].strip())
 
+    # Configuration des files de messages pour la communication entre Alice et Bob
     param_queue = queue.Queue()
+    alice_to_bob_queue = queue.Queue()
+    bob_to_alice_queue = queue.Queue()
+
+    # Pousse les paramètres dans la file d'attente
+    param_queue.put((p, g))
     param_queue.put((p, g))
 
-    # Threads pour Alice et Bob
-    a_thread = threading.Thread(target=alice, args=(param_queue,))
-    b_thread = threading.Thread(target=bob, args=(param_queue,))
+    # État initial pour Eve (l'espionne)
+    print(f"Eve (l'espionne) connaît : p = {p}, g = {g}")
 
-    a_thread.start()
-    b_thread.start()
+    # Création et démarrage des threads pour Alice et Bob
+    alice_thread = threading.Thread(target=alice, args=(param_queue, alice_to_bob_queue, bob_to_alice_queue, output_file))
+    bob_thread = threading.Thread(target=bob, args=(param_queue, alice_to_bob_queue, bob_to_alice_queue, output_file))
 
-    a_thread.join()
-    b_thread.join()
+    alice_thread.start()
+    bob_thread.start()
 
-if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python3 dh_genkey.py -i <input_file>")
-        sys.exit(1)
+    # Attendre que les deux threads se terminent
+    alice_thread.join()
+    bob_thread.join()
+    print("Échange de clés terminé, clé partagée enregistrée dans le fichier de sortie.")
 
-    input_file = sys.argv[2]
-    main(input_file)
+# Exemple d'utilisation
+main('key.txt', 'out.txt')

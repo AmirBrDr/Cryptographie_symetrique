@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#include "dh_prime.h" // Inclure le fichier d'en-tête contenant les déclarations des fonctions
+#include "dh_prime.h"
 
 void print_usage() {
     printf("Usage: dh_gen_group -o <output_file> | -h\n");
