@@ -6,44 +6,44 @@ import sys
 def puissance_mod_n(a: int, e: int, n: int) -> int:
     p = 1
     while e > 0:
-        if e % 2 != 0:
-            p = (p * a) % n
-        a = (a * a) % n
+        if e%2 != 0:
+            p = (p*a)%n
+        a = (a*a)%n
         e //= 2
     return p
 
 # Fonction pour Alice
 def alice(param_queue, alice_to_bob_queue, bob_to_alice_queue, output_file):
-    p, g = param_queue.get()
-    a = 6  # Choisir un secret pour Alice
-    A = puissance_mod_n(g, a, p)  # Calculer A = g^a mod p
+    p,g = param_queue.get()
+    a = 2285745974  # Choisir un secret pour Alice
+    A = puissance_mod_n(g,a,p)  # Calculer A = g^a mod p
     print(f"Alice envoie A = {A} à Bob.")
     alice_to_bob_queue.put(A)  # Envoi de A à Bob
 
     # Attendre la réception de B
     B = bob_to_alice_queue.get()
-    shared_key = puissance_mod_n(B, a, p)
+    shared_key = puissance_mod_n(B,a,p)
     print(f"Alice calcule la clé partagée = {shared_key}")
 
     # Enregistrement de la clé partagée dans le fichier de sortie
-    with open(output_file, 'a') as f:
+    with open(output_file,'a') as f:
         f.write(f"Clé partagée (calculée par Alice) : {shared_key}\n")
 
 # Fonction pour Bob
 def bob(param_queue, alice_to_bob_queue, bob_to_alice_queue, output_file):
-    p, g = param_queue.get()
-    b = 15  # Choisir un secret pour Bob
-    B = puissance_mod_n(g, b, p)  # Calculer B = g^b mod p
+    p,g = param_queue.get()
+    b = 7760899098  # Choisir un secret pour Bob
+    B = puissance_mod_n(g,b,p)  # Calculer B = g^b mod p
     print(f"Bob envoie B = {B} à Alice.")
     bob_to_alice_queue.put(B)  # Envoi de B à Alice
 
     # Attendre la réception de A
     A = alice_to_bob_queue.get()
-    shared_key = puissance_mod_n(A, b, p)
+    shared_key = puissance_mod_n(A,b,p)
     print(f"Bob calcule la clé partagée = {shared_key}")
 
     # Enregistrement de la clé partagée dans le fichier de sortie
-    with open(output_file, 'a') as f:
+    with open(output_file,'a') as f:
         f.write(f"Clé partagée (calculée par Bob) : {shared_key}\n")
 
 def print_usage():
@@ -60,11 +60,11 @@ def main():
 
     # Parcours des arguments de la ligne de commande
     for i in range(1, len(sys.argv)):
-        if sys.argv[i] == "-i" and (i + 1) < len(sys.argv):
-            input_file = sys.argv[i + 1]
+        if sys.argv[i] == "-i" and (i+1) < len(sys.argv):
+            input_file = sys.argv[i+1]
             i += 1  # Passer l'argument du fichier
-        elif sys.argv[i] == "-o" and (i + 1) < len(sys.argv):
-            output_file = sys.argv[i + 1]
+        elif sys.argv[i] == "-o" and (i+1) < len(sys.argv):
+            output_file = sys.argv[i+1]
             i += 1  # Passer l'argument du fichier
         elif sys.argv[i] == "-h":
             print_usage()

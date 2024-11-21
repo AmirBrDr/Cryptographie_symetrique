@@ -18,8 +18,8 @@ int main(int argc, char *argv[]) {
 
     // Traitement des arguments
     for (int i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "-o") == 0 && (i + 1) < argc) {
-            output_file = argv[i + 1];
+        if (strcmp(argv[i], "-o") == 0 && (i+1) < argc) {
+            output_file = argv[i+1];
             i++; // Passer l'argument du fichier
         } else if (strcmp(argv[i], "-h") == 0) {
             print_usage();
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 
     // Générer le nombre premier de Sophie Germain
     int cpt = 0;
-    long p = genPrimeSophieGermain(1000, 10000, &cpt); // Définir une plage de recherche pour p
+    long p = genPrimeSophieGermain(10000000, 1000000000000, &cpt); // Définir une plage de recherche pour p
     if (p == 0) {
         fprintf(stderr, "Erreur lors de la génération du nombre premier.\n");
         return 1;
