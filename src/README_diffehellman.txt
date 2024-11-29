@@ -1,5 +1,5 @@
 # Equipe 6 
-Amirmahdi GHASEMI, Ivan URIB, Axel CARCY, Mohamed-Yâ-Sîn MAATI
+Amirmahdi GHASEMI, Ivan URIBE, Axel CARCY, Mohamed-Yâ-Sîn MAATI
 
 Échange de Diffie-Hellman 
 
