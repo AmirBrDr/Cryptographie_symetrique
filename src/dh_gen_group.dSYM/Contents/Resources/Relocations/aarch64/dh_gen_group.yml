@@ -1,0 +1,19 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     dh_gen_group
+relocations:
+  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _print_usage, symObjAddr: 0x0, symBinAddr: 0x1000032FC, symSize: 0x1C }
+  - { offsetInCU: 0x42, offset: 0x42, size: 0x8, addend: 0x0, symName: _print_usage, symObjAddr: 0x0, symBinAddr: 0x1000032FC, symSize: 0x1C }
+  - { offsetInCU: 0x57, offset: 0x57, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x1C, symBinAddr: 0x100003318, symSize: 0x288 }
+  - { offsetInCU: 0x26, offset: 0x31C, size: 0x8, addend: 0x0, symName: _random_long, symObjAddr: 0x0, symBinAddr: 0x1000035A0, symSize: 0x4C }
+  - { offsetInCU: 0x46, offset: 0x33C, size: 0x8, addend: 0x0, symName: _random_long, symObjAddr: 0x0, symBinAddr: 0x1000035A0, symSize: 0x4C }
+  - { offsetInCU: 0x7C, offset: 0x372, size: 0x8, addend: 0x0, symName: _puissance_mod_n, symObjAddr: 0x4C, symBinAddr: 0x1000035EC, symSize: 0xBC }
+  - { offsetInCU: 0xCE, offset: 0x3C4, size: 0x8, addend: 0x0, symName: _test_prime, symObjAddr: 0x108, symBinAddr: 0x1000036A8, symSize: 0xC8 }
+  - { offsetInCU: 0x104, offset: 0x3FA, size: 0x8, addend: 0x0, symName: _rabin, symObjAddr: 0x1D0, symBinAddr: 0x100003770, symSize: 0x154 }
+  - { offsetInCU: 0x180, offset: 0x476, size: 0x8, addend: 0x0, symName: _generePremierRabin, symObjAddr: 0x324, symBinAddr: 0x1000038C4, symSize: 0xE4 }
+  - { offsetInCU: 0x1E0, offset: 0x4D6, size: 0x8, addend: 0x0, symName: _genPrimeSophieGermain, symObjAddr: 0x408, symBinAddr: 0x1000039A8, symSize: 0x118 }
+  - { offsetInCU: 0x240, offset: 0x536, size: 0x8, addend: 0x0, symName: _seek_generator, symObjAddr: 0x520, symBinAddr: 0x100003AC0, symSize: 0xF0 }
+  - { offsetInCU: 0x284, offset: 0x57A, size: 0x8, addend: 0x0, symName: _generate_shared_key, symObjAddr: 0x610, symBinAddr: 0x100003BB0, symSize: 0xF8 }
+  - { offsetInCU: 0x2FC, offset: 0x5F2, size: 0x8, addend: 0x0, symName: _int_pow, symObjAddr: 0x708, symBinAddr: 0x100003CA8, symSize: 0x98 }
+  - { offsetInCU: 0x340, offset: 0x636, size: 0x8, addend: 0x0, symName: _nb_digit_base10, symObjAddr: 0x7A0, symBinAddr: 0x100003D40, symSize: 0x50 }
+...

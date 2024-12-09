@@ -54,3 +54,11 @@ Clé partagée (calculée par Bob) : 869374958
 Clé partagée (calculée par Alice) : 869374958
 Clé partagée (calculée par Bob) : 45444256
 Clé partagée (calculée par Alice) : 45444256
+Clé partagée (calculée par Bob) : 3958362110
+Clé partagée (calculée par Alice) : 3958362110
+Clé partagée (calculée par Alice) : 2854058106
+Clé partagée (calculée par Bob) : 2854058106
+Clé partagée (calculée par Alice) : 1448037279
+Clé partagée (calculée par Bob) : 1448037279
+Clé partagée (calculée par Bob) : 1448037279
+Clé partagée (calculée par Alice) : 1448037279
