@@ -10,6 +10,7 @@
 #include <getopt.h>
 #include <math.h>
 #include "xor.h"
+#include "break_code_c3_test.h"
 
 #define maxCaractere 62
 
@@ -48,7 +49,10 @@ void lire_fichier(const char *nom_fichier, unsigned char **contenu, size_t *tail
     fclose(fichier);
 }
 
-//Verifie si le mot est présent dans le dictionnaire
+/* Verifie si le mot est présent dans le dictionnaire
+ * - `mot` : le mot à chercher
+ * - `dico` : le dictionnaire
+ */
 bool mot_present(char *mot, char *dico){
     char *present;
     present = strstr(dico, mot);
@@ -60,7 +64,11 @@ bool mot_present(char *mot, char *dico){
     }
 }
 
-//retour le nombre de mots correctes avec un message dechiffré
+/* Retourne le nombre de mots correctes avec un message déchiffré 
+ * - `message_decrypte` : le message déchiffré
+ * - `dico` : le dictionnaire
+ * - `separators` : les séparateurs
+*/
 int nombre_mots_correctes(char *message_decrypte, char *dico, const char *separators){
     char *token = strtok(message_decrypte, separators);
     int retour = 0;
