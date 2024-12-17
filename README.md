@@ -5,7 +5,8 @@ Compilation des mains:
 
 gcc Wall symcrypt.c -o symcrypt
 
-Utilisation : symcrypt -i <fichier_entree> -o <fichier_sortie> -k <cle> | -f <fichier_cle> -m <methode> -v <fichier_iv> [-l <fichier_log>]\n
+Utilisation : symcrypt -i <fichier_entree> -o <fichier_sortie> -k <cle> | -f <fichier_cle> -m <methode> -v <fichier_iv> [-l <fichier_log>]
+
 Options :
             "  -i <fichier_entree>   Fichier contenant le texte en clair (obligatoire)
             "  -o <fichier_sortie>   Fichier de sortie pour le texte chiffré (obligatoire)
