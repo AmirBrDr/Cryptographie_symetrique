@@ -171,7 +171,7 @@ int main(int argc, char *argv[]) {
 
 
         if (log_flux) fprintf(log_flux, "Début du tri en fonction du nombre de mots valides \n");
-        break_code_c3(message_entree, taille_cle,taille_entree, tab_cle_probables);
+        break_code_c3(message_entree, taille_cle,taille_entree, tab_cle_probables,fichier_dico);
 
         if (log_flux) fprintf(log_flux, "La clé la plus probable est : %s \n", tab_cle_probables[0].cle);
 
