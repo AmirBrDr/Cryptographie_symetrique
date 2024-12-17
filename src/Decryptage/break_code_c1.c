@@ -15,6 +15,7 @@ int maxCaracteres = 62;
 int tailleClef;
 
 
+
 bool charCorrect(const char *message_entree, char caractere, int tailleClef, int indiceClef, int taille_fichier) {
     size_t taille = taille_fichier;
     char car;

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include "xor.h"
 
 void xor_chiffre(const unsigned char *msg, const unsigned char *key, unsigned char *output, size_t msg_len, int key_size) {
     for (size_t i = 0; i < msg_len; i++) {
