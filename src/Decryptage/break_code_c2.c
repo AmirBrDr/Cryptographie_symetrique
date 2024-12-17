@@ -1,32 +1,41 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <errno.h>
+#include <time.h>
 #include <ctype.h>
+#include <stdbool.h>
+#include <fcntl.h>
+#include <string.h>
+#include <errno.h>
+#include <getopt.h>
+#include <math.h>
+#include "break_code_c2.h"
+
 
 #define maxCaractere 62
 
 int total_cle;
 
-struct cle {
-    char cle[maxCaractere];
-    float moy_freq_lettre;
-};
 
-/// Statistiques pour la langue française
+/// français
 float stat_thFr[26] = {9.42, 1.02, 2.64, 3.39, 15.87, 0.95, 1.04, 0.77, 8.41, 0.89,
-                       0.00, 5.34, 3.24, 7.15, 5.14, 2.86, 1.06, 6.46, 7.90, 7.26,
-                       6.24, 2.15, 0.00, 0.30, 0.24, 0.32};
+		0.00, 5.34, 3.24, 7.15,  5.14, 2.86, 1.06, 6.46, 7.90, 7.26,
+		6.24, 2.15, 0.00, 0.30, 0.24, 0.32};
 
-// Alphabet
+//anglais de a à z
+  float stat_thEn[26] = {8.167, 1.492, 2.782,4.253,12.702,2.228,2.015,6.094,6.966,0.153,
+        0.772,4.025,2.406,6.749,7.507,1.929,0.095,5.987,6.327,9.056,
+        2.758,0.978,2.36,0.15,1.974,0.074};
+
+//alphabet
 char *alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
+
+
 // Fonction de chiffrement et déchiffrement XOR
-void xor_chiffre(const unsigned char *msg, const char *key, unsigned char *output, size_t msg_len, int key_size) {
+void xor_chiffre(const unsigned char *msg, const char *key, unsigned char *output, size_t msg_len, size_t key_len) {
     for (size_t i = 0; i < msg_len; i++) {
-        output[i] = msg[i] ^ key[i % key_size];  // XOR avec la clé cyclique
+        output[i] = msg[i] ^ key[i % key_len];  // XOR with cyclic key
     }
 }
 
@@ -38,17 +47,20 @@ void lire_fichier(const char *nom_fichier, unsigned char **contenu, size_t *tail
         exit(EXIT_FAILURE);
     }
 
+    // Obtenir la taille du fichier
     fseek(fichier, 0, SEEK_END);
     *taille = ftell(fichier);
     fseek(fichier, 0, SEEK_SET);
-
+    
+    // Allouer de la mémoire pour le contenu du fichier
     *contenu = malloc(*taille);
     if (!*contenu) {
         perror("Erreur d'allocation de mémoire");
         fclose(fichier);
         exit(EXIT_FAILURE);
     }
-
+    
+    // Lire le fichier dans le tampon
     fread(*contenu, 1, *taille, fichier);
     fclose(fichier);
 }
@@ -83,7 +95,7 @@ float moyenne_frequence_lettre(const unsigned char *message, size_t taille) {
 
 
 // Tri par ordre croissant
-void tri_croissant(struct cle tab_cle[], int taille) {
+void tri_croissant(struct cle *tab_cle, int taille) {
     struct cle temp;
     for (int i = 0; i < taille - 1; i++) {
         for (int j = 0; j < taille - i - 1; j++) {
@@ -96,55 +108,20 @@ void tri_croissant(struct cle tab_cle[], int taille) {
     }
 }
 
-int main(int argc, char *argv[]) {
-    int tailleClef = 3;  // Exemple temporaire, la taille de la clé
 
-    // Exemple de tableau de caractères possibles
-    char tab_car_possible[3][maxCaractere] = {"abc", "12", "xyz"};
+void break_code_c2(const unsigned char *message_entree, size_t taille_cle, size_t taille_message, char **cle_possibles, struct cle *tab_cle_probables, int total_cle){
 
-    // Calcul du nombre total de clés possibles
-    total_cle = 1;
-    for (int i = 0; i < tailleClef; i++) {
-        total_cle *= strlen(tab_car_possible[i]);
+    //Mise en place de la variable contenant le xor
+
+    char *message_decrypte = malloc(taille_message + 16);
+
+
+    //Boucle qui décrypte le fichier avec chaque clé, avant d'y attribuer une note
+    for(int i = 0; i < total_cle; i++){
+        xor_chiffre(message_entree, cle_possibles[i], message_decrypte, taille_message, taille_cle );
+        tab_cle_probables[i].moy_freq_lettre = moyenne_frequence_lettre(message_decrypte, taille_message);
     }
 
-    struct cle tab_cle[total_cle];
-
-    // Génération des clés
-    int index = 0;
-    for (int i = 0; i < strlen(tab_car_possible[0]); i++) {
-        for (int j = 0; j < strlen(tab_car_possible[1]); j++) {
-            for (int k = 0; k < strlen(tab_car_possible[2]); k++) {
-                snprintf(tab_cle[index].cle, tailleClef + 1, "%c%c%c",
-                         tab_car_possible[0][i], tab_car_possible[1][j], tab_car_possible[2][k]);
-                index++;
-            }
-        }
-    }
-
-    // Lire le fichier chiffré
-    unsigned char *contenu;
-    size_t taille;
-    lire_fichier("long_texte.txt", &contenu, &taille);
-
-    unsigned char *message_decrypte = malloc(taille);
-
-    // Tester chaque clé
-    for (int i = 0; i < total_cle; i++) {
-        xor_chiffre(contenu, tab_cle[i].cle, message_decrypte, taille, tailleClef);
-        tab_cle[i].moy_freq_lettre = moyenne_frequence_lettre(message_decrypte, taille);
-    }
-
-    // Trier les clés
-    tri_croissant(tab_cle, total_cle);
-
-    // Afficher les 10 premières clés
-    printf("Top 10 des clés avec la plus faible distance :\n");
-    for (int i = 0; i < 10 && i < total_cle; i++) {
-        printf("Clé : %s, Distance : %.2f\n", tab_cle[i].cle, tab_cle[i].moy_freq_lettre);
-    }
-
-    free(contenu);
-    free(message_decrypte);
-    return 0;
+    //tri par ordre croissant
+    tri_croissant(tab_cle_probables, total_cle);
 }
