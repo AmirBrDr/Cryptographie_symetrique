@@ -4,6 +4,7 @@ Projet Avancé Équipe 6
 Compilation des mains:
 
 gcc Wall symcrypt.c -o symcrypt
+
 Utilisation : symcrypt -i <fichier_entree> -o <fichier_sortie> -k <cle> | -f <fichier_cle> -m <methode> -v <fichier_iv> [-l <fichier_log>]\n
 Options :
             "  -i <fichier_entree>   Fichier contenant le texte en clair (obligatoire)
@@ -17,6 +18,7 @@ Options :
 
 
 gcc Wall break_code_main.c -o break_code_main
+
 Utilisation : break_code -i <fichier_entree> -m <methode> -k <longueur_cle> [-d <fichier_dictionnaire>] [-l <fichier_log>] -lm
 
 Options :
