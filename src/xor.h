@@ -7,7 +7,7 @@
 #define TAILLE_BLOC 16
 
 // Fonction de chiffrement et déchiffrement XOR
-void xor_chiffre(const unsigned char *msg, const unsigned char *key, unsigned char *output, size_t msg_len);
+void xor_chiffre(const unsigned char *msg, const char *key, unsigned char *output, size_t msg_len, size_t key_len);
 
 // Fonction de génération aléatoire d'une clé alphanumérique
 void gen_key(unsigned char *key, size_t key_len);

@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
 
     if (strcmp(methode, "xor") == 0) {
 
-        xor_chiffre(message_entree, cle, message_sortie, taille_entree);
+        xor_chiffre(message_entree, cle, message_sortie, taille_entree, strlen(cle));
         if (log_flux) fprintf(log_flux, "Chiffrement XOR effectué.\n");
 
     } else if (strcmp(methode, "cbc-crypt") == 0) {
@@ -204,7 +204,7 @@ int main(int argc, char *argv[]) {
         }
 
         gen_key(cle, taille_entree);  // Utiliser la fonction pour générer la clé aléatoire
-        xor_chiffre(message_entree, cle, message_sortie, taille_entree);
+        xor_chiffre(message_entree, cle, message_sortie, taille_entree, strlen(cle));
         if (log_flux) fprintf(log_flux, "Chiffrement XOR effectué.\n");
         save_key_to_file(fichier_cle, cle);  // Sauvegarder la clé dans key.txt
 

@@ -37,7 +37,7 @@ void cbc_chiffrement(const unsigned char *message, size_t message_len, const uns
         }
 
         // Chiffrement du bloc en utilisant la fonction `xor_chiffre` et la clé
-        xor_chiffre(bloc, cle, message_chiffrer + i, TAILLE_BLOC);
+        xor_chiffre(bloc, cle, message_chiffrer + i, TAILLE_BLOC, strlen(cle));
 
         // Mise à jour de `bloc_precedent` avec le bloc chiffré pour l'itération suivante
         memcpy(bloc_precedent, message_chiffrer + i, TAILLE_BLOC);
@@ -62,7 +62,7 @@ void cbc_dechiffrement(const unsigned char *message_chiffre, size_t message_len,
         unsigned char bloc_intermediaire[TAILLE_BLOC];
 
         // Déchiffrement du bloc en utilisant `xor_chiffre` et la clé
-        xor_chiffre(message_chiffre + i, cle, bloc_intermediaire, TAILLE_BLOC);
+        xor_chiffre(message_chiffre + i, cle, bloc_intermediaire, TAILLE_BLOC, strlen(cle));
 
         // XOR entre `bloc_intermediaire` et le `bloc_precedent` pour obtenir le texte clair
         for (size_t j = 0; j < TAILLE_BLOC; j++) {
