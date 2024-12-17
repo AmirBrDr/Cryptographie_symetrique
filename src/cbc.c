@@ -1,17 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "xor.h"
+#include "cbc.h"
 #define TAILLE_BLOC 16
 
 // Fonction de chiffrement CBC (Cipher Block Chaining)
-// Cette fonction chiffre le message en utilisant le mode CBC.
-// Elle prend en paramètre :
-// - `message`: les données binaires à chiffrer
-// - `message_len`: la longueur des données
-// - `cle`: la clé de chiffrement
-// - `vi`: le vecteur d'initialisation (IV)
-// - `message_chiffrer`: le tampon où sera stocké le message chiffré
 void cbc_chiffrement(const unsigned char *message, size_t message_len, const unsigned char *cle, const unsigned char *vi, unsigned char *message_chiffrer) {
     // Calcul de la longueur ajustée pour un remplissage multiple de TAILLE_BLOC
     size_t padded_len = message_len;
@@ -45,13 +38,6 @@ void cbc_chiffrement(const unsigned char *message, size_t message_len, const uns
 }
 
 // Fonction de déchiffrement CBC (Cipher Block Chaining)
-// Cette fonction déchiffre un message chiffré en mode CBC.
-// Elle prend en paramètre :
-// - `message_chiffre`: les données chiffrées
-// - `message_len`: la longueur des données chiffrées
-// - `cle`: la clé de déchiffrement
-// - `vi`: le vecteur d'initialisation (IV)
-// - `message_dechiffre`: le tampon où sera stocké le message déchiffré
 void cbc_dechiffrement(const unsigned char *message_chiffre, size_t message_len, const unsigned char *cle, const unsigned char *vi, unsigned char *message_dechiffre) {
     unsigned char bloc_precedent[TAILLE_BLOC];
     memcpy(bloc_precedent, vi, TAILLE_BLOC);  // Copie du vecteur d'initialisation (IV) dans `bloc_precedent`

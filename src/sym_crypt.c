@@ -3,8 +3,9 @@
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
-#include "cbc.h"  // Assurez-vous d'inclure votre fichier d'en-tête
+#include "cbc.h"
 #include "xor.h"
+#include "sym_crypt.h"
 
 // Flux de log (par défaut stderr)
 FILE *log_flux = NULL;
@@ -25,7 +26,11 @@ void afficher_aide() {
             "  -h                    Afficher ce message d'aide\n");
 }
 
-// Fonction pour lire le contenu d'un fichier
+/* Fonction pour lire le contenu d'un fichier
+ * - `nom_fichier` : nom du fichier à lire
+ * - `contenu` : contenu du fichier
+ * - `taille` : taille du fichier
+ */
 void lire_fichier(const char *nom_fichier, unsigned char **contenu, size_t *taille) {
     FILE *fichier = fopen(nom_fichier, "rb");
     if (!fichier) {
@@ -55,7 +60,11 @@ void lire_fichier(const char *nom_fichier, unsigned char **contenu, size_t *tail
     if (log_flux) fprintf(log_flux, "Lecture du fichier '%s' réussie, taille : %zu octets\n", nom_fichier, *taille);
 }
 
-// Fonction pour écrire le contenu dans un fichier
+/* Fonction pour écrire le contenu dans un fichier
+ * - `nom_fichier` : nom du fichier de sortie
+ * - `contenu` : contenu à écrire
+ * - `taille` : taille du contenu
+ */
 void ecrire_fichier(const char *nom_fichier, const unsigned char *contenu, size_t taille) {
     FILE *fichier = fopen(nom_fichier, "wb");
     if (!fichier) {
@@ -117,18 +126,18 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    if (fichier_log) {
+    if (fichier_log) { // Ouvrir le fichier de log
         log_flux = fopen(fichier_log, "w");
         if (!log_flux) {
             fprintf(stderr, "Erreur d'ouverture du fichier de log '%s'\n", fichier_log);
             return EXIT_FAILURE;
         }
-    } else {
+    } else { // Utiliser stderr par défaut
         log_flux = stderr;
     }
 
-    if (log_flux) fprintf(log_flux, "Début du processus de cryptographie...\n");
-
+    if (log_flux) fprintf(log_flux, "Début du processus de cryptographie...\n"); 
+    
     if (!fichier_entree || !fichier_sortie || (!cle_directe && !fichier_cle) || (!cle_directe && !fichier_cle && strcmp(methode, "mask") != 0) 
         || (!fichier_iv && strcmp(methode, "cbc-crypt") == 0) || (!fichier_iv && strcmp(methode, "cbc-uncrypt") == 0)|| !methode) {
             
@@ -143,7 +152,7 @@ int main(int argc, char *argv[]) {
     lire_fichier(fichier_entree, &message_entree, &taille_entree);
 
     unsigned char *message_sortie = malloc(taille_entree + TAILLE_BLOC);
-    if (!message_sortie) {
+    if (!message_sortie) { // Vérifier l'allocation de mémoire
         perror("Erreur d'allocation de mémoire pour le message de sortie");
         if (log_flux) fprintf(log_flux, "Erreur d'allocation de mémoire pour le message de sortie\n");
         free(message_entree);
@@ -151,7 +160,7 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    if (fichier_cle) {
+    if (fichier_cle) { // Lire la clé depuis un fichier
         lire_fichier(fichier_cle, &cle, &taille_cle);
         if (log_flux) fprintf(log_flux, "Clé lue depuis le fichier '%s'\n", fichier_cle);
     } else {
@@ -160,16 +169,16 @@ int main(int argc, char *argv[]) {
         if (log_flux) fprintf(log_flux, "Clé spécifiée en ligne de commande\n");
     }
 
-    if (strcmp(methode, "xor") == 0) {
+    if (strcmp(methode, "xor") == 0) { // Chiffrement XOR
 
         xor_chiffre(message_entree, cle, message_sortie, taille_entree, strlen(cle));
         if (log_flux) fprintf(log_flux, "Chiffrement XOR effectué.\n");
 
-    } else if (strcmp(methode, "cbc-crypt") == 0) {
+    } else if (strcmp(methode, "cbc-crypt") == 0) { // Chiffrement CBC
 
         lire_fichier(fichier_iv, &vecteur_init, &taille_iv);
 
-        if (taille_iv != TAILLE_BLOC) {
+        if (taille_iv != TAILLE_BLOC) { // Vérifier la taille du vecteur d'initialisation
             fprintf(stderr, "Erreur : Le vecteur d'initialisation doit faire %d octets.\n", TAILLE_BLOC);
             if (log_flux) fprintf(log_flux, "Erreur : Le vecteur d'initialisation doit faire %d octets.\n", TAILLE_BLOC);
             free(vecteur_init);
@@ -177,9 +186,9 @@ int main(int argc, char *argv[]) {
         }
         cbc_chiffrement(message_entree, taille_entree, cle, vecteur_init, message_sortie);
 
-        if (log_flux) fprintf(log_flux, "Chiffrement CBC effectué.\n");
+        if (log_flux) fprintf(log_flux, "Chiffrement CBC effectué.\n"); 
 
-    } else if (strcmp(methode, "cbc-uncrypt") == 0) {
+    } else if (strcmp(methode, "cbc-uncrypt") == 0) { // Déchiffrement CBC
 
         lire_fichier(fichier_iv, &vecteur_init, &taille_iv);
         if (taille_iv != TAILLE_BLOC) {
@@ -192,11 +201,11 @@ int main(int argc, char *argv[]) {
 
         if (log_flux) fprintf(log_flux, "Déchiffrement CBC effectué.\n");
         
-    } else if (strcmp(methode, "mask") == 0) {
+    } else if (strcmp(methode, "mask") == 0) { 
         // Générer une clé aléatoire si la méthode est mask
         cle = malloc(taille_entree + 1);
 
-        if (!cle) {
+        if (!cle) { // Vérifier l'allocation de mémoire
             perror("Erreur d'allocation de mémoire pour la clé générée");
             free(message_entree);
             free(message_sortie);
@@ -204,7 +213,7 @@ int main(int argc, char *argv[]) {
         }
 
         gen_key(cle, taille_entree);  // Utiliser la fonction pour générer la clé aléatoire
-        xor_chiffre(message_entree, cle, message_sortie, taille_entree, strlen(cle));
+        xor_chiffre(message_entree, cle, message_sortie, taille_entree, strlen(cle)); // Chiffrer le message avec la clé générée
         if (log_flux) fprintf(log_flux, "Chiffrement XOR effectué.\n");
         save_key_to_file(fichier_cle, cle);  // Sauvegarder la clé dans key.txt
 
@@ -213,7 +222,7 @@ int main(int argc, char *argv[]) {
         } 
 
 
-    } else {
+    } else { 
 
         fprintf(stderr, "Erreur : Méthode inconnue '%s'.\n", methode);
         if (log_flux) fprintf(log_flux, "Erreur : Méthode inconnue '%s'.\n", methode);
