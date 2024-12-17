@@ -1,7 +1,13 @@
 # Cryptographie_symetrique
-Projet Avancé Équipe 6
+Projet Avancé Équipe 6:
 
-Compilation des mains:
+CARCY Axel
+URIBE Ivan
+GHASEMI Amirmahdi
+MAATI Mohammed
+
+
+-------------------------------------------Compilation des mains:-------------------------------------------------------------------------------
 
 gcc Wall symcrypt.c -o symcrypt
 
