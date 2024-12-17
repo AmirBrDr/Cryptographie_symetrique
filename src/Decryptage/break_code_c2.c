@@ -65,7 +65,7 @@ void lire_fichier(const char *nom_fichier, unsigned char **contenu, size_t *tail
     fclose(fichier);
 }
 
-// Fonction qui calcule la distance entre les fréquences attendues et observées
+
 float moyenne_frequence_lettre(const unsigned char *message, size_t taille) {
     int occurences[26] = {0};
     int total_lettres = 0;
@@ -94,7 +94,6 @@ float moyenne_frequence_lettre(const unsigned char *message, size_t taille) {
 }
 
 
-// Tri par ordre croissant
 void tri_croissant(struct cle *tab_cle, int taille) {
     struct cle temp;
     for (int i = 0; i < taille - 1; i++) {
