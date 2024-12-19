@@ -9,13 +9,16 @@
 #include <errno.h>
 #include <getopt.h>
 #include <math.h>
-#include "break_code_c2.h"
-
 
 #define maxCaractere 62
 
 int total_cle;
 
+struct cle{
+    char cle[maxCaractere];
+    float moy_freq_lettre;
+    float mots_correctes;
+};
 
 /// français
 float stat_thFr[26] = {9.42, 1.02, 2.64, 3.39, 15.87, 0.95, 1.04, 0.77, 8.41, 0.89,
@@ -33,9 +36,9 @@ char *alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
 
 
 // Fonction de chiffrement et déchiffrement XOR
-void xor_chiffre(const unsigned char *msg, const char *key, unsigned char *output, size_t msg_len, size_t key_len) {
+void xor_chiffre(const unsigned char *msg, const unsigned char *key, unsigned char *output, size_t msg_len, size_t key_len) {
     for (size_t i = 0; i < msg_len; i++) {
-        output[i] = msg[i] ^ key[i % key_len];  // XOR with cyclic key
+        output[i] = msg[i] ^ key[i % key_len];  // Opération XOR
     }
 }
 
@@ -65,35 +68,28 @@ void lire_fichier(const char *nom_fichier, unsigned char **contenu, size_t *tail
     fclose(fichier);
 }
 
+//Fonction qui calcule la distance entre la moyenne attendue et la moyennee du fichier decrypté
+float moyenne_frequence_lettre(char *message_decrypte){
+    float moyenne = 0;
+    float occurence = 0;
 
-float moyenne_frequence_lettre(const unsigned char *message, size_t taille) {
-    int occurences[26] = {0};
-    int total_lettres = 0;
 
-    // Compter les occurrences des lettres alphabétiques
-    for (size_t i = 0; i < taille; i++) {
-        if (isalpha(message[i])) {
-            occurences[tolower(message[i]) - 'a']++;
-            total_lettres++;
+    for(int i = 0; i <  26; i++){
+        for(int j = 0; j < strlen(message_decrypte); j++){
+            if(message_decrypte[j] == alphabet[i]){
+                occurence++;
+            }
         }
+        printf("%c : %f occurences soit %f \n", alphabet[i], occurence, (occurence / strlen(message_decrypte)) * 100);
+
+        moyenne = moyenne + pow((stat_thFr[i] - (occurence / strlen(message_decrypte)) * 100), 2.0);
+        occurence = 0;
     }
 
-    // Retourner une grande distance si aucune lettre n'est trouvée
-    if (total_lettres == 0) {
-        return 1e6; // Une distance arbitraire très grande pour éliminer cette clé
-    }
-
-    // Calculer la moyenne des écarts
-    float moyenne = 0.0;
-    for (int i = 0; i < 26; i++) {
-        float freq_obs = (occurences[i] / (float)total_lettres) * 100.0;
-        moyenne += pow(stat_thFr[i] - freq_obs, 2);
-    }
-
-    return sqrt(moyenne);
+    return moyenne;
 }
 
-
+//Fonction qui tri par ordre croissant de distance
 void tri_croissant(struct cle *tab_cle, int taille) {
     struct cle temp;
     for (int i = 0; i < taille - 1; i++) {
@@ -108,19 +104,43 @@ void tri_croissant(struct cle *tab_cle, int taille) {
 }
 
 
-void break_code_c2(const unsigned char *message_entree, size_t taille_cle, size_t taille_message, char **cle_possibles, struct cle *tab_cle_probables, int total_cle){
+
+int main(int argc, char *argv[]){
+
+    if(argc != 2){
+        fprintf(stderr, "Il y a des paramètres manquants.\n");
+        exit(-1);
+    }
+
+    char *fichierEntree = argv[1];
+
+
+    // Ouvrir le fichier crypté
+    size_t taille;
+    unsigned char *contenu = NULL;
+
+    lire_fichier(fichierEntree, &contenu, &taille);
+
 
     //Mise en place de la variable contenant le xor
 
-    char *message_decrypte = malloc(taille_message + 16);
+    char *message_decrypte = malloc(taille);
 
 
     //Boucle qui décrypte le fichier avec chaque clé, avant d'y attribuer une note
     for(int i = 0; i < total_cle; i++){
-        xor_chiffre(message_entree, cle_possibles[i], message_decrypte, taille_message, taille_cle );
-        tab_cle_probables[i].moy_freq_lettre = moyenne_frequence_lettre(message_decrypte, taille_message);
+        //message_decrypte = xor_chiffre(contenu, tab_cle[i].cle, message_decrypte, taille );
+        //tab_cle[i].moy_freq_lettre = moyenne_frequence_lettre(message_decrypte);
     }
 
-    //tri par ordre croissant
-    tri_croissant(tab_cle_probables, total_cle);
+    //tri_croissant(tab_cle, total_cle);
+
+
+
+    //partie test
+    printf("%f moyenne \n", moyenne_frequence_lettre(contenu));
+
+
+
+    
 }

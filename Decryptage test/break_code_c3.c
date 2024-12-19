@@ -9,17 +9,29 @@
 #include <errno.h>
 #include <getopt.h>
 #include <math.h>
-#include "xor.h"
-#include "break_code_c3.h"
+
 #define maxCaractere 62
 
 int total_cle;
 
+struct cle{
+    char cle[maxCaractere];
+    float moy_freq_lettre;
+    int mots_correctes;
+};
 
+// Fonction de chiffrement et déchiffrement XOR
+void xor_chiffre(const unsigned char *msg, const unsigned char *key, unsigned char *output, size_t msg_len, size_t key_len) {
+    for (size_t i = 0; i < msg_len; i++) {
+        output[i] = msg[i] ^ key[i % key_len];  // Opération XOR
+    }
+}
 
 
 // Fonction pour lire un fichier
 void lire_fichier(const char *nom_fichier, unsigned char **contenu, size_t *taille) {
+
+
     FILE *fichier = fopen(nom_fichier, "rb");
     if (!fichier) {
         fprintf(stderr, "Erreur d'ouverture du fichier '%s' : %s\n", nom_fichier, strerror(errno));
@@ -70,46 +82,51 @@ int nombre_mots_correctes(char *message_decrypte, char *dico, const char *separa
     return retour;
 }
 
-// Tri par ordre decroissant
-void tri_decroissant(cle tab_cle[], int taille) {
-    struct cle temp;
-    for (int i = 0; i < taille - 1; i++) {
-        for (int j = 0; j < taille - i - 1; j++) {
-            if (tab_cle[j].moy_freq_lettre < tab_cle[j + 1].moy_freq_lettre) {
-                temp = tab_cle[j];
-                tab_cle[j] = tab_cle[j + 1];
-                tab_cle[j + 1] = temp;
-            }
-        }
+
+
+int main(int argc, char *argv[]){
+    if(argc != 3){
+        fprintf(stderr, "Il y a des paramètres manquants.\n");
+        exit(-1);
     }
-}
+
+    char *fichierEntree = argv[1];
+    char *fichierDico = argv[2];
 
 
+    // Ouvrir le fichier crypté
+    size_t taille;
+    unsigned char *contenu = NULL;
 
-void break_code_c3(const unsigned char *message_entree, size_t taille_cle, size_t taille_message, struct cle *tab_cle_probables, int total_cle, char *fichier_dico){
+    lire_fichier(fichierEntree, &contenu, &taille);
+
 
     // Ouvrir le dictionnaire
     size_t taille_dico;
     unsigned char *contenu_dico = NULL;
 
-    lire_fichier(fichier_dico, &contenu_dico, &taille_dico);
+    lire_fichier(fichierDico, &contenu_dico, &taille_dico);
 
     //Peut être modifié si l'utilisateur le souhaite
     const char *separators = " ,.-!\n";
 
 
 
-    char *message_decrypte = malloc(taille);
-
-
     //Boucle qui décrypte le fichier avec chaque clé, avant d'y attribuer le nombre de mots correctes
     for(int i = 0; i < total_cle; i++){
-        message_decrypte = xor_chiffre(contenu, tab_cle_probables[i].cle, message_decrypte, taille );
-        tab_cle_probables[i].mots_correctes = nombre_mots_correctes(message_decrytpe, contenu_dico, separators);
+        //message_decrypte = xor_chiffre(contenu, tab_cle[i].cle, message_decrypte, taille );
+        //tab_cle[i].mots_correctes = nombre_mots_correctes(message_decrytpe, contenu_dico, separators);
     }
 
     //fonction qui trie par ordre décroissant
-    tri_croissant(tab_cle_probables[i], total_cle);
+
+
+    //test
+
+    struct cle test;
+    test.mots_correctes = nombre_mots_correctes(contenu, contenu_dico, separators);
+
+    printf("Il y a %d mots corrects \n", test.mots_correctes);
 
 
 

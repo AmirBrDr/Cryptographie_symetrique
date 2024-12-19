@@ -11,11 +11,16 @@
 #include <math.h>
 #include "xor.h"
 #include "break_code_c3.h"
+
 #define maxCaractere 62
 
 int total_cle;
 
-
+struct cle{
+    char cle[maxCaractere];
+    float moy_freq_lettre;
+    int mots_correctes;
+};
 
 
 // Fonction pour lire un fichier
@@ -44,7 +49,10 @@ void lire_fichier(const char *nom_fichier, unsigned char **contenu, size_t *tail
     fclose(fichier);
 }
 
-//Verifie si le mot est présent dans le dictionnaire
+/* Verifie si le mot est présent dans le dictionnaire
+ * - `mot` : le mot à chercher
+ * - `dico` : le dictionnaire
+ */
 bool mot_present(char *mot, char *dico){
     char *present;
     present = strstr(dico, mot);
@@ -56,7 +64,11 @@ bool mot_present(char *mot, char *dico){
     }
 }
 
-//retour le nombre de mots correctes avec un message dechiffré
+/* Retourne le nombre de mots correctes avec un message déchiffré 
+ * - `message_decrypte` : le message déchiffré
+ * - `dico` : le dictionnaire
+ * - `separators` : les séparateurs
+*/
 int nombre_mots_correctes(char *message_decrypte, char *dico, const char *separators){
     char *token = strtok(message_decrypte, separators);
     int retour = 0;
@@ -70,33 +82,29 @@ int nombre_mots_correctes(char *message_decrypte, char *dico, const char *separa
     return retour;
 }
 
-// Tri par ordre decroissant
-void tri_decroissant(cle tab_cle[], int taille) {
-    struct cle temp;
-    for (int i = 0; i < taille - 1; i++) {
-        for (int j = 0; j < taille - i - 1; j++) {
-            if (tab_cle[j].moy_freq_lettre < tab_cle[j + 1].moy_freq_lettre) {
-                temp = tab_cle[j];
-                tab_cle[j] = tab_cle[j + 1];
-                tab_cle[j + 1] = temp;
-            }
-        }
-    }
-}
 
 
+int main(int argc, char *argv[]){
+    // Ouvrir le fichier
+    size_t taille;
+    char *nom_fichier = "long_texte.txt";
+    unsigned char *contenu = NULL;
 
-void break_code_c3(const unsigned char *message_entree, size_t taille_cle, size_t taille_message, struct cle *tab_cle_probables, int total_cle, char *fichier_dico){
+    lire_fichier(nom_fichier, &contenu, &taille);
+
 
     // Ouvrir le dictionnaire
     size_t taille_dico;
+    char *nom_dico = "dicoFrSA.txt";
     unsigned char *contenu_dico = NULL;
 
-    lire_fichier(fichier_dico, &contenu_dico, &taille_dico);
+    lire_fichier(nom_dico, &contenu_dico, &taille_dico);
 
     //Peut être modifié si l'utilisateur le souhaite
     const char *separators = " ,.-!\n";
 
+    //variable temporaire, doit être récupérée avec breakc2
+    struct cle tab_cle[total_cle];
 
 
     char *message_decrypte = malloc(taille);
@@ -104,12 +112,19 @@ void break_code_c3(const unsigned char *message_entree, size_t taille_cle, size_
 
     //Boucle qui décrypte le fichier avec chaque clé, avant d'y attribuer le nombre de mots correctes
     for(int i = 0; i < total_cle; i++){
-        message_decrypte = xor_chiffre(contenu, tab_cle_probables[i].cle, message_decrypte, taille );
-        tab_cle_probables[i].mots_correctes = nombre_mots_correctes(message_decrytpe, contenu_dico, separators);
+        //message_decrypte = xor_chiffre(contenu, tab_cle[i].cle, message_decrypte, taille );
+        //tab_cle[i].mots_correctes = nombre_mots_correctes(message_decrytpe, contenu_dico, separators);
     }
 
     //fonction qui trie par ordre décroissant
-    tri_croissant(tab_cle_probables[i], total_cle);
+
+
+    //test
+
+    struct cle test;
+    test.mots_correctes = nombre_mots_correctes(contenu, contenu_dico, separators);
+
+    printf("%d \n", test.mots_correctes);
 
 
 
